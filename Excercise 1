@@ -1,0 +1,23 @@
+1.tcpdump 
+Purpose: Captures network packets in real-time from the command line. 
+Command: sudo tcpdump -i any icmp 
+2. netstat   
+Purpose: Shows network connections, routing tables, and interface statistics. 
+Command: netstat -an 
+3. traceroute 
+Purpose: Displays the path packets take to reach a host. 
+Command: tracert google.com 
+4.nslookup 
+Purpose: Queries DNS to resolve domain names into IP addresses. 
+Command: nslookup google.com 
+5. ipconfig 
+Purpose: Displays network interfaces and their configurations. 
+Command: ipconfig 
+Capture Ping and Traceroute   
+1.Open Wireshark. 
+2.Choose the correct network interface (e.g., eth0, wlan0). 
+3.Start capturing. 
+4.Open a terminal and run: 
+ping google.com 
+traceroute google.com 
+5.Stop cap
