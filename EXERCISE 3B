@@ -1,0 +1,79 @@
+Server: 
+import java.io.*; 
+import java.net.*; 
+import java.util.Scanner; 
+public class chatser { 
+public static void main(String[] args) { 
+final int SERVER_PORT = 9876; 
+Scanner scanner = new Scanner(System.in); 
+try { 
+DatagramSocket serverSocket = new DatagramSocket(SERVER_PORT); 
+System.out.println("UDP Server started. Waiting for messages..."); 
+byte[] receiveData = new byte[1024]; 
+while (true) { 
+// Receive request 
+DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length); 
+serverSocket.receive(receivePacket); 
+String message = new String(receivePacket.getData(), 0, receivePacket.getLength()); 
+if (message.equalsIgnoreCase("END")) { 
+System.out.println("Received 'END'. Server shutting down."); 
+break;  // Step 4 & 10 
+} 
+// Step 5: Get client IP and port 
+InetAddress clientIP = receivePacket.getAddress(); 
+int clientPort = receivePacket.getPort(); 
+// Step 6: Display received message 
+System.out.println("Received from client: " + message); 
+// Step 7: Get reply from server user 
+System.out.print("Enter reply to client: "); 
+String reply = scanner.nextLine(); 
+// Step 8: Send reply 
+byte[] sendData = reply.getBytes(); 
+DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, clientIP, 
+clientPort); 
+serverSocket.send(sendPacket); 
+} 
+serverSocket.close(); 
+} catch (IOException e) { 
+System.out.println("Server Error: " + e.getMessage()); 
+} 
+} 
+} 
+
+
+
+Client: 
+import java.io.*; 
+import java.net.*; 
+import java.util.Scanner; 
+public class charclient { 
+public static void main(String[] args) { 
+final int SERVER_PORT = 9876; 
+Scanner scanner = new Scanner(System.in); 
+try { 
+DatagramSocket clientSocket = new DatagramSocket(); 
+InetAddress IPAddress = InetAddress.getByName("localhost"); 
+while (true) { 
+System.out.print("Enter message (type 'END' to quit): "); 
+String message = scanner.nextLine(); 
+// Send request 
+byte[] sendData = message.getBytes(); 
+DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 
+SERVER_PORT); 
+clientSocket.send(sendPacket); 
+if (message.equalsIgnoreCase("END")) { 
+break;  // Step 5 & 10 
+} 
+// Wait for reply 
+byte[] receiveData = new byte[1024]; 
+DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length); 
+clientSocket.receive(receivePacket); 
+String reply = new String(receivePacket.getData(), 0, receivePacket.getLength()); 
+System.out.println("Server reply: " + reply);  // Step 8 
+} 
+clientSocket.close(); 
+} catch (IOException e) { 
+System.out.println("Client Error: " + e.getMessage()); 
+} 
+} 
+}
