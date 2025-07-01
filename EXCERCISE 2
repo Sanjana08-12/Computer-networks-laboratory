@@ -1,0 +1,49 @@
+ 
+package sanjana; 
+ 
+import java.io.*; 
+import java.net.*; 
+ 
+public class HttpWebClient { 
+    public static void main(String[] args) { 
+        String host = "example.com"; // You can change this to any site like "google.com" 
+        int port = 80; 
+ 
+        try (Socket socket = new Socket(host, port)) { 
+ 
+            // Prepare the HTTP GET request 
+            PrintWriter request = new PrintWriter(socket.getOutputStream(), true); 
+            request.println("GET / HTTP/1.1"); 
+            request.println("Host: " + host); 
+            request.println("Connection: close"); 
+            request.println(); // Blank line to end the headers 
+ 
+            // Read the response 
+            BufferedReader response = new BufferedReader(new 
+InputStreamReader(socket.getInputStream())); 
+            String line; 
+            while ((line = response.readLine()) != null) { 
+                System.out.println(line); 
+            } 
+ 
+        } catch (IOException e) { 
+            e.printStackTrace(); 
+        } 
+    } 
+} 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
