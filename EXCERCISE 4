@@ -1,0 +1,84 @@
+Server: 
+import java.io.*; 
+import java.net.*; 
+import java.util.*; 
+public class fileser { 
+public static void main(String[] args) { 
+final int SERVER_PORT = 9876; 
+try { 
+// Step 2: Create UDP socket 
+DatagramSocket serverSocket = new DatagramSocket(SERVER_PORT); 
+System.out.println("DNS Server is running..."); 
+// Step 3: Create host-IP mapping table 
+Map<String, String> dnsTable = new HashMap<>(); 
+dnsTable.put("google.com", "142.250.183.206"); 
+dnsTable.put("yahoo.com", "98.137.11.164"); 
+dnsTable.put("example.com", "93.184.216.34"); 
+dnsTable.put("openai.com", "104.22.1.46"); 
+byte[] receiveData = new byte[1024]; 
+byte[] sendData; 
+// Receive loop 
+while (true) { 
+// Step 4: Receive hostname from client 
+DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length); 
+serverSocket.receive(receivePacket); 
+String hostname = new String(receivePacket.getData(), 0, receivePacket.getLength()); 
+System.out.println("Request received for hostname: " + hostname); 
+// Step 5: Get client IP (optional display) 
+InetAddress clientIP = receivePacket.getAddress(); 
+int clientPort = receivePacket.getPort(); 
+// Step 6: Lookup IP 
+String ipAddress = dnsTable.getOrDefault(hostname.toLowerCase(), "Hostname not 
+found"); 
+// Step 7: Display 
+System.out.println("Mapped IP: " + ipAddress); 
+// Step 8: Send back IP to client 
+sendData = ipAddress.getBytes(); 
+DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, clientIP, 
+clientPort); 
+serverSocket.send(sendPacket); 
+} 
+} catch (IOException e) { 
+System.out.println("Server Error: " + e.getMessage()); 
+} 
+} 
+} 
+
+
+Client: 
+import java.io.*; 
+import java.net.*; 
+import java.util.Scanner; 
+public class fileclient { 
+public static void main(String[] args) { 
+final int SERVER_PORT = 9876; 
+final String SERVER_ADDRESS = "localhost"; 
+try { 
+// Step 2: Create UDP socket 
+DatagramSocket clientSocket = new DatagramSocket(); 
+Scanner scanner = new Scanner(System.in); 
+// Step 3: Get host name from user 
+System.out.print("Enter hostname to resolve: "); 
+String hostname = scanner.nextLine(); 
+byte[] sendData = hostname.getBytes(); 
+// Step 4: Send hostname to server 
+InetAddress serverIP = InetAddress.getByName(SERVER_ADDRESS); 
+DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverIP, 
+SERVER_PORT); 
+clientSocket.send(sendPacket); 
+// Step 5-6: Wait and receive IP address reply 
+byte[] receiveData = new byte[1024]; 
+DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length); 
+clientSocket.receive(receivePacket); 
+String ipAddress = new String(receivePacket.getData(), 0, receivePacket.getLength()); 
+// Step 7: Display result 
+System.out.println("IP address for " + hostname + ": " + ipAddress); 
+// Step 8: Stop 
+clientSocket.close(); 
+} catch (IOException e) { 
+System.out.println("Client Error: " + e.getMessage()); 
+ 
+ 
+        } 
+    } 
+}
